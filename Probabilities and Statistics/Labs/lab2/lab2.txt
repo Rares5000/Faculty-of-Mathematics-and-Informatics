@@ -1,0 +1,60 @@
+(omega, K, P)
+
+omega = {1, 2, 3, 4, 5, 6}
+
+{1, 3, 5} -> stanga {2, 4, 6} -> dreapta
+
+K -> multimea tuturor evenimentelor
+
+K = { {1, 3, 5}, {2, 4, 6}, multimea vida, omega }
+
+K = P(omega)
+
+K include P(omega) s. n. sigma-algebra daca:
+1) multimea vida, omega APARTIN K
+2) A APARTINE K => complementar A APARTINE K
+3) (An)n INCLUS IN K => U(n>=1) An APARTINE K
+
+K0 = {multimea vida, omega}
+
+P(omega)
+
+omega = {a, b, c}
+K0 = {multimea vida, omega}
+K1 = {multimea vida, omega, {a}, {b, c}}
+K2 = {multimea vida, omega, {a}, {b, c}, {b}, {a, c}, {a, b}, {c}}
+
+P(omega) = {multimea vida, {a}, {b}, {c}, {a, b}, {a, c}, {b, c}, {a, b, c}}
+
+
+|omega| = n  |P(omega)| = 2^n     2^2^(n - 1)
+
+
+Problema:
+Sa fac sigma algebra pentru n
+
+Evenimente -> Incompatibile (Nu sunt doar opuse) A intersectat cu B = multimea vida
+			P(A intersectat cu B) = 0
+	   -> Independente
+			P(A intersectat cu B) = P(A) * P(B)
+P(A reunit cu B) = P(A) + P(B) - P(A intersectat cu B)
+
+
+Probleme laborator-------------------------------------
+1. Actiuni la bursa -> pot sa scada, sa creasca sau sa ramana la acelasi nivel
+Se analizeaza evolutia cursurilor actiunilor dintr-un portofoliu compus din doua actiuni pe parcursul unei zile
+	Cerinta a) Determinati elementele elementare si numarul total de evenimente asociate evenimentului studiat
+	Cerinta b) Generalizati rezultatul pentru un portofoliu cu n actiuni
+
+a) Ai -> actiunea i creste    i = 1, 2
+   Bi -> actiunea i scade
+   Ci -> actiunea i stagneaza
+
+A1 intersectat cu A2   A1 int cu B2   A1 int cU C2
+B1 intersectat cu B2       -//-          -//-
+C1 intersectat cu C2       -//-          -//-
+
+Numar total de elemente elementare m^n unde m = nr. schimburi si n = nr. actiuni
+Si 2 ^ m ^ n pt toate evenimentele
+
+

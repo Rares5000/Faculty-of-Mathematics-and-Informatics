@@ -1,0 +1,71 @@
+Ex 1)
+Avem 2 evenimente: A si B
+P(A n B) = 0.01
+P(A n B^c) = 0.03
+P(A \ B) = 0.05
+
+Cerinte:
+a) P(A), P(B)
+b) P(A U B), P(A^c U B^c)
+c) P(B \ A), P(A \ B^c)
+d) P(B \ A^c), P(A^c \ B^c)
+
+a)
+P(B) = P(A n B) = 0.01 / 0.05 = 0.2
+A n B si A n B^c -> incompatibile => P((A n B) U (A n B^c)) = P(A n B) + P(A n B^c) =>
+=> P(A) = P(A n B) + P(A n B^c) = 0.04
+
+b) P(A U B) = 0.23
+   P(B) = 0.2
+   P(A) = 0.04
+...
+
+c) P(B \ A) = P(A n B) / P(A) = 0.01 / 0.04 = 1 / 4
+   P(A \ B^c) = P(A n B^c) / P(B^c) = 0.03 / 1 - 0.2 = 0.03 / 0.8 = 3 / 80
+
+d) P(B \ A^c) = P(B n A^c) / P(A^c) = (P(B) - P(A n B)) / 1 - P(A)
+  
+Ex 2)
+Exista alt eveniment cu probabilitatea 0 inafara de evenimentul imposibil?                |
+Pp ca exista A != multimea vida astfel incat P(A) = 0 => P(A^c) = 1 => P(omega) = 1       | =>  A^c = omega contradictie
+A^c inclus in omega => P(A^c) < P(omega)                                                  |     Preuspunem falsa
+
+
+Ex 3)
+Sunt 13 ... si nu sunt functionale. Se extrag 4 piese si se cere sa calculam probabilitatile urmatoarelor evenimente:
+a) 
+Prima piesa controlata e defecta
+A doua si a treia sunt corespunzatoare
+A 4 a este defecta
+
+b)
+Toate piesele controlate sunt corespunzatoare
+
+c)
+Cel putin o piesa controlata este defecta
+
+d)
+O singura piesa din cele 4 controlate este defecta
+
+
+Notatie: Ci evenimentul ca piesa i este corespunzatoare
+        di = ci, unde i = 1 ... 4 
+
+a)
+A - eveniment din cele 4 = D1 n C2 n C3 n D4
+P(A) = P(D1)
+
+P(A) = P(D1) * P(C2 | D1) * P(C3 | C2 n D1) * P(D4 | C3 n C2 n D1) = 3 / 13 * 10 / 
+
+c) P(A) = P(C1 n C2 n C3 n C4 toate complementar) = 1 - P(C1 n C2 n C3 n C4) = 1 - P(C1) * P(C2 | C1) * P(c3 | C2 n C1) * P(C4 | C3 n C2 n C1)
+
+d) P(A) = P((D1 n C2 n C3 n D4) U (C1 n D2 n C3 n C4) U (C1 n C2 n D3 n C4) U (C1 n C2 n C3 n D4))
+Cele 4 sunt incompatibile => P(D1 n C2 n C3 n D4) + P(C1 n D2 n C3 n C4) + P(C1 n C2 n D3 n C4) + P(C1 n C2 n C3 n D4)
+P(D1) * P(C2 | D1) * P(C3 | C2 n D1) * P(D4 | C3 n C2 n D1) + P(C1) * P(D2 | C1) * P(C3 | D2 n C1) * P(C4 | C3 n D2 n C1) + P(C1) *
+* P(C2 | C1) * P(D3 | C2 n C1) * P(C4 | D3 n C2 n C1) + P(C1) * P(C2 | C1) * P(C3 | C2 n C1) * P(D4 | C3 n C2 n C1)
+-------
+Formula
+P(A | B) = P(A intersectat cu B) / P(B)
+P(A1 n A2 n A3 n ... n An)
+
+Ce este dupa bara | conditioneaza

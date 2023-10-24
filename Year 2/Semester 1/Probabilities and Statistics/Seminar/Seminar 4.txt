@@ -1,0 +1,54 @@
+1)
+Intr-un magazin sunt calculatoare care provin de la furnizori diferiti: 30 - furnizorul F1, 20 - furnizorul F2, 50 - furnizorul F3.
+2% defecte F1, 5% defecte F2, 1% defecte F3
+
+10% din 500 sau 100% din 2
+
+a) Calculati probabilitatea ca un calculator ales la intamplare din 100 sa se defecteze la garantie
+
+D - Calculator defect
+B - Calculator bun
+
+D^c = B
+
+Fi = calculatorul provine de la furnizorul i
+
+P(F1 U F2 U F3 n D) = P(D)
+
+Probabilitatea trage catre 1% deoarece ponderea este mare
+
+Daca F1, F2, ... , Fn a caror reuniune formeaza omega spunem ca formeaza o partitie a lui omega
+
+P(D | F1) = P(D n F1) / P(F1) = 2%
+P(D | F2) = P(D n F2) / P(F2) = 5%
+P(D | F3) = P(D n F3) / P(F3) = 1%
+P(F1) = 20%
+P(F2) = 50%
+P(F3) = 30%
+
+P(D) = P(D) n omega = P(D n (F1 U F2 U F3)) = P((D n F1) U (D n F2) U (D n F3)) -> disjuncte 2 cate 2 => P(D n F1) + P(D n F2) + P(D n F3)
+P(D) = P(D | F1) * P(F1) + P(D | F2) * P(F2) + P(D | F3) * P(F3) = (2 * 30 + 5 * 20 + 1 * 50) / 104 = 210 / 104 = 0,0210
+
+b)
+Calculati probabilitatea ca un calculator care ... sa provina de la al 3 lea furnizor
+P(F3 | D) = P(F3 n D) / P(D) = (P(D | F3) * P(F3)) / P(D) = (1% * 50%) / 2,1% = 50 / 2,1 = 10 / 21 * 1 / 2 = 5 / 21 = 0.23
+
+c)
+P(D | (F1 U F3)) = P(D n (F1 U F3) / P(F1 U F3) = P(D n F1 U D n F2) / P(F1 U F3) = (P(D n F1) + P(D n F3)) / (P(F1) + P(F3)) = 
+= (P(D | F1) * P(F1) + P(D | F2) * P(F3)) / (P(F1) + P(F3)) = 11 / 8 * 1 / 100 = 1,37%
+
+Alta rezolvare: ???
+P(C) = 1 - P(D | F2) = 1 - 5% = 95%
+
+d)
+Prob ca un calculator care nu se defecteaza sa provina de la F1 sau F2
+
+----------------------------------------
+
+Formula:
+P(A | B) = P(A n B) / P(B) => P(A n B) = P(A | B) * P(B)
+			      P(A n B) = P(B | A) * P(A)
+
+Observatie:
+P(A^c | B) = 1 - P(A | B)
+P(A | B^c) != 1 - P(A | B)

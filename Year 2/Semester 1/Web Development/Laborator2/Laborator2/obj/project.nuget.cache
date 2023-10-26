@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lFCHxMa+/sDFi+9T/avdYqdjNOkuqpXhPp7MN4/dda4uY3zH5zKzyxdZh/GCBOeHKlMnC3otoYyQFC2h6frnrA==",
+  "dgSpecHash": "Bju6EyohQUdvSsA+g7/jQIgGbxG92+Ullwj+c2vvNmPqZywsAR1erJtyUmzomvjfwK89RPTJt+yrvufbrGDgDA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\baciu\\source\\repos\\Laborator2\\Laborator2\\Laborator2.csproj",
+  "projectFilePath": "C:\\Users\\baciu\\Documents\\GitHub\\Faculty-of-Mathematics-and-Informatics\\Year 2\\Semester 1\\Web Development\\Laborator2\\Laborator2\\Laborator2.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\baciu\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\baciu\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",

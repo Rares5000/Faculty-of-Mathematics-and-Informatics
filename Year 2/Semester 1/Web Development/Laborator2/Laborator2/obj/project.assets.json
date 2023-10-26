@@ -442,11 +442,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\baciu\\source\\repos\\Laborator2\\Laborator2\\Laborator2.csproj",
+      "projectUniqueName": "C:\\Users\\baciu\\Documents\\GitHub\\Faculty-of-Mathematics-and-Informatics\\Year 2\\Semester 1\\Web Development\\Laborator2\\Laborator2\\Laborator2.csproj",
       "projectName": "Laborator2",
-      "projectPath": "C:\\Users\\baciu\\source\\repos\\Laborator2\\Laborator2\\Laborator2.csproj",
+      "projectPath": "C:\\Users\\baciu\\Documents\\GitHub\\Faculty-of-Mathematics-and-Informatics\\Year 2\\Semester 1\\Web Development\\Laborator2\\Laborator2\\Laborator2.csproj",
       "packagesPath": "C:\\Users\\baciu\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\baciu\\source\\repos\\Laborator2\\Laborator2\\obj\\",
+      "outputPath": "C:\\Users\\baciu\\Documents\\GitHub\\Faculty-of-Mathematics-and-Informatics\\Year 2\\Semester 1\\Web Development\\Laborator2\\Laborator2\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\baciu\\AppData\\Roaming\\NuGet\\NuGet.Config",

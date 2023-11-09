@@ -54,5 +54,29 @@ namespace Lab4_23.Controllers
             
             return Ok(model1ById);
         }
+
+        [HttpGet("blogs")]
+        public async Task<IActionResult> GetBlogsWithPostsUsingJoin()
+        {
+            var blogsWithPosts = await _lab4Context.Blogs
+                .Join(
+                    post => _lab4Context.Posts,
+                    blog => blog.Id,
+                    (blog, posts) => new { Blog = blog, Posts = posts }
+                )
+                .ToListAsync();
+
+            return Ok(blogsWithPosts);
+        }
+
+        [HttpGet("blogs/include")]
+        public async Task<IActionResult> GetBlogsWithPostsUsingInclude()
+        {
+            var blogsWithPosts = await _lab4Context.Blogs
+                .Include(blog => blog.Posts)
+                .ToListAsync();
+
+            return Ok(blogsWithPosts);
+        }
     }
 }

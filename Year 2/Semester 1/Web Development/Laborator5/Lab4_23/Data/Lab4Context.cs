@@ -13,6 +13,8 @@ namespace Lab4_23.Data
         // One to Many
         public DbSet<Model1> Models1 { get; set; }
         public DbSet<Model2> Models2 { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
+        public DbSet<Post> Posts { get; set; }
 
 
         // One to One

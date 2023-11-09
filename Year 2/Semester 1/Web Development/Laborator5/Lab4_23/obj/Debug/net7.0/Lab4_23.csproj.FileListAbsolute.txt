@@ -74,3 +74,13 @@ C:\Users\mihae\Desktop\Projects\Labs fmi\Lab 2023\Lab4_23\Lab4_23\obj\Debug\net7
 C:\Users\mihae\Desktop\Projects\Labs fmi\Lab 2023\Lab4_23\Lab4_23\obj\Debug\net7.0\Lab4_23.pdb
 C:\Users\mihae\Desktop\Projects\Labs fmi\Lab 2023\Lab4_23\Lab4_23\obj\Debug\net7.0\Lab4_23.genruntimeconfig.cache
 C:\Users\mihae\Desktop\Projects\Labs fmi\Lab 2023\Lab4_23\Lab4_23\obj\Debug\net7.0\ref\Lab4_23.dll
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Laborator5\Lab4_23\obj\Debug\net7.0\Lab4_23.csproj.AssemblyReference.cache
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Laborator5\Lab4_23\obj\Debug\net7.0\Lab4_23.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Laborator5\Lab4_23\obj\Debug\net7.0\Lab4_23.AssemblyInfoInputs.cache
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Laborator5\Lab4_23\obj\Debug\net7.0\Lab4_23.AssemblyInfo.cs
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Laborator5\Lab4_23\obj\Debug\net7.0\Lab4_23.csproj.CoreCompileInputs.cache
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Laborator5\Lab4_23\obj\Debug\net7.0\Lab4_23.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Laborator5\Lab4_23\obj\Debug\net7.0\Lab4_23.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Laborator5\Lab4_23\obj\Debug\net7.0\Lab4_23.dll
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Laborator5\Lab4_23\obj\Debug\net7.0\refint\Lab4_23.dll
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Laborator5\Lab4_23\obj\Debug\net7.0\Lab4_23.pdb

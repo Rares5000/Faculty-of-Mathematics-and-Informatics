@@ -33,7 +33,8 @@ P(omega) = {multimea vida, {a}, {b}, {c}, {a, b}, {a, c}, {b, c}, {a, b, c}}
 Problema:
 Sa fac sigma algebra pentru n
 
-Evenimente -> Incompatibile (Nu sunt doar opuse) A intersectat cu B = multimea vida
+!!!!Evenimente 
+	   -> Incompatibile (Nu sunt doar opuse) A intersectat cu B = multimea vida
 			P(A intersectat cu B) = 0
 	   -> Independente
 			P(A intersectat cu B) = P(A) * P(B)

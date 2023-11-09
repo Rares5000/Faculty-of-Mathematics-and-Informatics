@@ -73,8 +73,14 @@ namespace Laborator4.Repositories.GenericReporitory
             _table.RemoveRange(entities);
         }
 
+        //Find
+        public TEntity FindById(Guid id)
+        {
+            return _table.Find(id);
+        }
+
         //Save
-        public async Task<bool> Save()
+        public bool Save()
         {
             return _lab4Context.SaveChanges() > 0;
         }

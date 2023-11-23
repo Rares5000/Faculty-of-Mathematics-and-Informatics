@@ -24,7 +24,7 @@
         User's name: {{user.name}}; Index: {{i}}
       </mat-list-item>
     </mat-list>
-    <br/>
+    <br />
     <p [ngStyle]="{background: selectedUser?.background}">Selected user name is {{ selectedUser?.name }}</p>
   </mat-card-content>
 </mat-card>
@@ -33,7 +33,7 @@
 <mat-card>
   <mat-card-content>
     <p> Model binding with NgModel</p>
-    <input matInput type="text" [(ngModel)]="selectedUser.name"/>
+    <input matInput type="text" [(ngModel)]="selectedUser.name" />
   </mat-card-content>
 </mat-card>
 
@@ -74,3 +74,11 @@
   <ng-template [ngSwitchCase]="9">9</ng-template>
   <ng-template [ngSwitchCase]="4">4</ng-template>
 </mat-card>
+
+<mat-card>
+  <mat-card-content>
+    <p>Counter's value is {{counter}}</p>
+    <button mat-button color="warn" (click)="deceaseCounter()">Decrease the counter</button>
+  </mat-card-content>
+</mat-card>
+

@@ -37,6 +37,10 @@ export class DemoComponent implements OnInit, OnDestroy, OnChanges {
     this.counter++;
   }
 
+  decreaseCounter() {
+    this.counter--;
+  }
+
   selectUser(user: any) {
     this.selectedUser = user;
   }

@@ -1,0 +1,22 @@
+<div class="container">
+    <h1 class="mt-3">Student List</h1>
+  
+    <ng-container *ngIf="students$ | async as students">
+      <table class="table table-bordered mt-3">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Age</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let student of students">
+            <td>{{student.Id}}</td>
+            <td>{{student.Name}}</td>
+            <td>{{student.Age}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+  </div>

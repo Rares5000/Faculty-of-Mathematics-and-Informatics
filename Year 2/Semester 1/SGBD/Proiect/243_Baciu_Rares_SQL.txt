@@ -1,0 +1,660 @@
+---------------------------------------------------------------------Cerinta 4
+CREATE TABLE JUCATORI(
+    jucator_id NUMBER(10) PRIMARY KEY,
+    nume VARCHAR(20) NOT NULL,
+    prenume VARCHAR(20) NOT NULL,
+    pozitie VARCHAR(20) NOT NULL,
+    numar_tricou NUMBER(5) NOT NULL 
+);
+
+ALTER TABLE JUCATORI
+ADD CHECK (numar_tricou >= 1 AND numar_tricou <= 99);
+
+CREATE TABLE ECHIPE(
+    echipa_id NUMBER(10) PRIMARY KEY,
+    nume VARCHAR(20) NOT NULL,
+    stadion VARCHAR(20) NOT NULL,
+    nr_trofee NUMBER(5),
+    patron_id NUMBER(10) NOT NULL
+);
+
+
+CREATE TABLE PATRON(
+    patron_id NUMBER(10) PRIMARY KEY,
+    nume VARCHAR(20) NOT NULL,
+    prenume VARCHAR(20) NOT NULL
+);
+
+
+CREATE TABLE ANTRENORI(
+    antrenor_id NUMBER(10) PRIMARY KEY,
+    nume VARCHAR(20) NOT NULL,
+    prenume VARCHAR(20) NOT NULL,
+    specializare VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE ARBITRI(
+    arbitru_id NUMBER(10) PRIMARY KEY,
+    nume VARCHAR(20) NOT NULL,
+    prenume VARCHAR(20) NOT NULL
+);
+
+
+CREATE TABLE FEDERATII(
+    federatie_id NUMBER(10) PRIMARY KEY,
+    nume VARCHAR(20) NOT NULL,
+    presedinte VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE COMPETITII(
+    competitie_id NUMBER(10) PRIMARY KEY,
+    tara VARCHAR(20) NOT NULL,
+    data_inceput DATE NOT NULL,
+    data_final DATE NOT NULL,
+    sponsor VARCHAR(20) 
+);
+
+ALTER TABLE COMPETITII
+ADD nume VARCHAR(20) NOT NULL;
+
+CREATE TABLE ETAPE(
+    etapa_id NUMBER(10) PRIMARY KEY,
+    competitie_id NUMBER(10) NOT NULL
+);
+
+CREATE TABLE ANTRENEAZA(
+    echipa_id NUMBER(10),
+    antrenor_id NUMBER(10),
+    jucator_id NUMBER(10),
+    data_antrenament DATE NOT NULL,
+    tip_antrenament VARCHAR(20)  NOT NULL,
+    CONSTRAINT pk_antr PRIMARY KEY(echipa_id, antrenor_id, jucator_id)
+);
+
+CREATE TABLE TRANSFERA(
+    echipa_id NUMBER(10),
+    patron_id NUMBER(10),
+    jucator_id NUMBER(10),
+    suma_transfer FLOAT(10),
+    nume_agent VARCHAR(20) NOT NULL
+);
+
+ALTER TABLE TRANSFERA
+ADD CONSTRAINT pk_transf PRIMARY KEY(echipa_id, jucator_id, patron_id);
+
+CREATE TABLE JOACA_MECIURI(
+    etapa_id NUMBER(10),
+    arbitru_id NUMBER(10),
+    gazda NUMBER(10) NOT NULL,
+    oaspete NUMBER(10) NOT NULL,
+    data_meci DATE NOT NULL,
+    stadion VARCHAR(20) NOT NULL,
+    CONSTRAINT pk_jm PRIMARY KEY(etapa_id, arbitru_id)
+);
+
+CREATE TABLE LEGITIMEAZA(
+    echipa_id NUMBER(10),
+    jucator_id NUMBER(10),
+    salariu FLOAT(10), 
+    ani_contract NUMBER(10) NOT NULL,
+    CONSTRAINT pk_legit PRIMARY KEY(echipa_id, jucator_id),
+    CHECK (ani_contract >=1 AND ani_contract <= 6)
+);
+
+CREATE TABLE PARTICIPA(
+    echipa_id NUMBER(10),
+    competitie_id NUMBER(10),
+    poz_clasament NUMBER(10) NOT NULL,
+    puncte NUMBER(10),
+    goluri_marcate NUMBER(10),
+    goluri_primite NUMBER(10),
+    CONSTRAINT pk_participa PRIMARY KEY(echipa_id, competitie_id),
+    CHECK (poz_clasament >=1 AND poz_clasament <=20)
+);
+
+CREATE TABLE ORGANIZEAZA(
+    federatie_id NUMBER(10),
+    competitie_id NUMBER(10),
+    CONSTRAINT pk_org PRIMARY KEY(federatie_id, competitie_id)
+);
+
+CREATE TABLE ANGAJEAZA(
+    federatie_id NUMBER(10),
+    arbitru_id NUMBER(10),
+    salariu FLOAT(10),
+    ani_contract NUMBER(10) NOT NULL,
+    CONSTRAINT pk_ang PRIMARY KEY(federatie_id, arbitru_id),
+    CHECK(ani_contract >= 1 AND ani_contract <= 6)
+);
+
+---------------------------------------------------------------------Cerinta 5
+INSERT INTO JUCATORI
+values(1, 'BACIU','RARES','ATACANT','10');
+
+INSERT INTO JUCATORI
+values(2, 'BOT','GEORGE','ATACANT','9');
+
+INSERT INTO JUCATORI
+values(3, 'DAN','DOD','MIJLOCAS','7');
+
+INSERT INTO JUCATORI
+values(4, 'DONIU','CRISTIAN','PORTAR','1');
+
+INSERT INTO JUCATORI
+values(5, 'MERCU','ADELIN','MIJLOCAS','18');
+
+INSERT INTO JUCATORI
+values(6, 'ADONIS','TIK','FUNDAS','4');
+
+INSERT INTO JUCATORI
+values(7, 'OBREZ','MERCAN','ATACANT','9');
+
+INSERT INTO JUCATORI
+values(8, 'DENNIS','MANN','ATACANT','10');
+
+INSERT INTO JUCATORI
+values(9, 'IANIS','HAGI','MIJLOCAS','20');
+
+INSERT INTO JUCATORI
+values(10, 'PAULO','VINICIUS','FUNDAS','4');
+
+INSERT INTO ECHIPE
+values(1,'DINAMO BUCURESTI','STEFAN CEL MARE',18,1);
+
+INSERT INTO ECHIPE
+values(2,'FC VASLUI','MUNICIPAL',100,2);
+
+INSERT INTO ECHIPE
+values(3,'FCSB','NATIONAL ARENA',17,3);
+
+INSERT INTO ECHIPE
+values(4,'RAPID BUCURESTI','GIULESTI',10,4);
+
+INSERT INTO ECHIPE
+values(5,'CFR CLUJ','DAN PALTINISANU',7,5);
+
+INSERT INTO ARBITRI
+values(1,'ISTVAN ','KOVACS');
+
+INSERT INTO ARBITRI
+values(2,'OVIDIU','HATEGAN');
+
+
+INSERT INTO ARBITRI
+values(3,'SEBASTIAN','COLTESCU');
+
+INSERT INTO COMPETITII
+values(1,'ROMANIA','10-AUG-22','10-JUN-22','BERGENBIER','LIGA 1');
+
+INSERT INTO COMPETITII
+values(2,'ANGLIA','11-AUG-22','10-MAY-22','BARCLAYS','PREMIER LEAGUE');
+
+
+INSERT INTO COMPETITII
+values(3,'ITALIA','9-AUG-22','15-JUN-22','TM','SERIE A');
+
+
+INSERT INTO COMPETITII
+values(4,'GERMANIA','12-AUG-22','12-JUN-22','BBVA','LA LIGA');
+
+INSERT INTO COMPETITII
+values(5,'FRANTA','14-AUG-22','12-MAY-22','UBER EATS','LIGUE ONE');
+
+INSERT INTO ANTRENORI
+values(1,'DAN','PETRESCU','PRINCIPAL');
+
+INSERT INTO ANTRENORI
+values(2,'MIRCEA','LUCESCU','PRINCIPAL');
+
+INSERT INTO ANTRENORI
+values(3,'VASILE','CONSTANTIN','FITNESS');
+
+INSERT INTO ANTRENORI
+values(4,'CATALIN','STRATON','PORTARI');
+
+INSERT INTO ANTRENORI
+values(5, 'LAURENTIU', 'REGHECAMPF', 'PRINCIPAL');
+
+INSERT INTO FEDERATII
+values(1,'FRF','RAZVAN BURLEANU');
+
+INSERT INTO FEDERATII
+values(2,'FIFA','GIANNI INFANTINO');
+
+INSERT INTO PATRON
+values(1,'BORCEA','CRISTI');
+
+INSERT INTO PATRON
+values(2,'PORUMBOIU','ADRIAN');
+
+INSERT INTO PATRON
+values(3,'BECALI','GIGI');
+
+INSERT INTO PATRON
+values(4,'PANCU','DANIEL');
+
+INSERT INTO PATRON
+values(5,'MURESAN','IULIU');
+
+INSERT INTO ETAPE
+values(1,1);
+
+INSERT INTO ETAPE
+values(2,1);
+
+INSERT INTO ETAPE
+values(3,1);
+
+INSERT INTO ETAPE
+values(4,1);
+
+INSERT INTO ETAPE
+values(5,1);
+
+INSERT INTO ETAPE
+values(6,2);
+
+INSERT INTO ETAPE
+values(7,2);
+
+INSERT INTO ETAPE
+values(8,3);
+
+INSERT INTO ANGAJEAZA
+values(1,1,3000,4);
+
+INSERT INTO ANGAJEAZA
+values(1,2,2000,5);
+
+INSERT INTO ANGAJEAZA
+values(1,3,3500,6);
+
+INSERT INTO ANTRENEAZA
+values(1,4,4,'10-AUG-2022','fitness');
+
+INSERT INTO ANTRENEAZA
+values(1,3,3,'10-AUG-2022','rezistenta');
+
+INSERT INTO ANTRENEAZA
+values(1,3,1,'10-AUG-2022','shooting');
+
+INSERT INTO ANTRENEAZA
+values(1,2,2,'10-AUG-2022','passing');
+
+INSERT INTO ANTRENEAZA
+values(1,2,5,'10-AUG-2022','rezistenta');
+
+INSERT INTO ANTRENEAZA
+values(1,2,6,'10-AUG-2022','defending');
+
+INSERT INTO ANTRENEAZA
+values(1,4,4,'10-AUG-2022','fitness');
+
+INSERT INTO ANTRENEAZA
+values(3,5,9,'10-AUG-2022','passing');
+
+INSERT INTO ANTRENEAZA
+values(3,5,10,'11-AUG-2022','defending');
+
+INSERT INTO ANTRENEAZA
+values(3,5,8,'10-AUG-2022','shooting');
+
+INSERT INTO ANTRENEAZA
+values(3,5,7,'11-AUG-2022','rezistanta');
+
+INSERT INTO LEGITIMEAZA
+values(1,1,999999.9,5);
+
+INSERT INTO LEGITIMEAZA
+values(1,2,999.9,3);
+
+INSERT INTO LEGITIMEAZA
+values(1,3,2000,2);
+
+INSERT INTO LEGITIMEAZA
+values(1,4,1300.50,4);
+
+INSERT INTO LEGITIMEAZA
+values(1,5,1500,4);
+
+INSERT INTO LEGITIMEAZA
+values(1,6,3000,3);
+
+INSERT INTO LEGITIMEAZA
+values(3,7,2000,3);
+
+INSERT INTO LEGITIMEAZA
+values(3,8,7000,1);
+
+INSERT INTO LEGITIMEAZA
+values(3,9,8000,2);
+
+INSERT INTO LEGITIMEAZA
+values(3,10,5000,4);
+
+INSERT INTO PARTICIPA
+values(1,1,1,90,50,0);
+
+
+INSERT INTO PARTICIPA
+values(2,1,2,89,49,1);
+
+
+INSERT INTO PARTICIPA
+values(3,1,3,40,22,45);
+
+
+INSERT INTO PARTICIPA
+values(4,1,4,30,30,40);
+
+
+INSERT INTO PARTICIPA
+values(5,1,5,10,12,57);
+
+INSERT INTO ORGANIZEAZA
+values(1,1);
+
+INSERT INTO ORGANIZEAZA
+values(2,2);
+
+INSERT INTO ORGANIZEAZA
+values(2,3);
+
+INSERT INTO ORGANIZEAZA
+values(2,4);
+
+INSERT INTO ORGANIZEAZA
+values(2,5);
+
+INSERT INTO TRANSFERA
+values(1,2,1,500000,'FABRIZIO ROMANO');
+
+INSERT INTO TRANSFERA
+values(1,2,2,2200,'AGENT 007');
+
+INSERT INTO TRANSFERA
+values(1,2,3,45000,'FABRIZIO ROMANO');
+
+INSERT INTO TRANSFERA
+values(1,2,4,0,'AGENT 001');
+
+INSERT INTO TRANSFERA
+values(1,2,5,3000,'JUSTITIARU');
+
+INSERT INTO TRANSFERA
+values(3,3,7,3200,'AGENT 007');
+
+INSERT INTO TRANSFERA
+values(3,3,8,5500,'VICTOR BECALI');
+
+INSERT INTO TRANSFERA
+values(3,3,9,20000,'VICTOR BECALI');
+
+INSERT INTO TRANSFERA
+values(3,3,10,12000,'VICTOR BECALI');
+
+INSERT INTO JOACA_MECIURI
+values(1,2,1,3,'11-APR-2002','STEFAN CEL MARE');
+
+INSERT INTO JOACA_MECIURI
+values(2,1,1,2,'17-APR-2002','STEFAN CEL MARE');
+
+INSERT INTO JOACA_MECIURI
+values(3,3,1,4,'20-APR-2002','STEFAN CEL MARE');
+
+INSERT INTO JOACA_MECIURI
+values(4,1,2,1,'30-APR-2002','MUNICIPAL');
+
+INSERT INTO JOACA_MECIURI
+values(5,2,2,3,'11-MAY-2002','MUNICIPAL');
+
+INSERT INTO JOACA_MECIURI
+values(6,3,3,5,'18-MAY-2002','ARENA NATIONALA');
+
+INSERT INTO JOACA_MECIURI
+values(7,1,5,1,'25-MAY-2002','DAN PALTINISANU');
+
+INSERT INTO JOACA_MECIURI
+values(8,3,4,2,'29-MAY-2002','GIULESTI');
+
+INSERT INTO JUCATORI
+values(11, 'ANDU','BRAN','REZERVA','18');
+
+INSERT INTO JUCATORI
+values(12, 'DANI','GRUPA','MIJLOCAS','8');
+
+INSERT INTO LEGITIMEAZA
+values(2,11,NULL,1);
+
+INSERT INTO LEGITIMEAZA
+values(2,12,NULL,2);
+
+---------------------------------------------------------------------Cerinta 6
+CREATE OR REPLACE PROCEDURE CalculeazaClasamentSiStatistici(
+    inCompetitieID NUMBER,
+    inEchipaID NUMBER
+)
+IS
+    TYPE ClasamentType IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
+    TYPE StatisticiMeciuriType IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
+    TYPE StatisticiType IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
+
+    Clasament ClasamentType;
+    StatisticiMeciuri StatisticiMeciuriType;
+    Statistici StatisticiType;
+
+    v_Puncte NUMBER;
+    v_GoluriMarcate NUMBER;
+    v_GoluriPrimite NUMBER;
+
+    CURSOR MeciuriCursor IS
+        SELECT puncte, goluri_marcate, goluri_primite
+        FROM PARTICIPA
+        WHERE echipa_id = inEchipaID AND competitie_id = inCompetitieID;
+
+    v_SumaPuncte NUMBER := 0;
+
+BEGIN
+    FOR j IN 1..20 LOOP
+        Clasament(j) := 0;
+    END LOOP;
+
+    StatisticiMeciuri := StatisticiMeciuriType();
+
+    FOR meci IN MeciuriCursor LOOP
+        v_Puncte := meci.puncte;
+        v_GoluriMarcate := meci.goluri_marcate;
+        v_GoluriPrimite := meci.goluri_primite;
+
+        Clasament(inEchipaID) := Clasament(inEchipaID) + v_Puncte;
+
+        StatisticiMeciuri(StatisticiMeciuri.COUNT + 1) := v_Puncte;
+    END LOOP;
+
+    FOR i IN 1..StatisticiMeciuri.COUNT LOOP
+        v_SumaPuncte := v_SumaPuncte + StatisticiMeciuri(i);
+    END LOOP;
+
+    Statistici(inEchipaID) := v_SumaPuncte;
+
+    DBMS_OUTPUT.PUT_LINE('Clasamentul echipei ' || inEchipaID || ' în competiția ' || inCompetitieID || ': ' || Clasament(inEchipaID));
+
+    DBMS_OUTPUT.PUT_LINE('Statisticile echipei ' || inEchipaID || ': Puncte: ' || Clasament(inEchipaID) || ', Suma punctelor: ' || Statistici(inEchipaID) || ', Media punctelor: ' || Statistici(inEchipaID) / StatisticiMeciuri.COUNT);
+END CalculeazaClasamentSiStatistici;
+/
+DECLARE
+    CompetitieID NUMBER := 1;
+    EchipaID NUMBER := 1;
+BEGIN
+    CalculeazaClasamentSiStatistici(CompetitieID, EchipaID);
+END;
+/
+
+---------------------------------------------------------------------Cerinta 7
+CREATE OR REPLACE PROCEDURE show_player_and_coach(p_jucator_id IN NUMBER)
+IS
+    CURSOR c1 IS 
+        SELECT jucator_id, nume, prenume, pozitie, numar_tricou 
+        FROM Jucatori;
+    CURSOR c2 (p_jucator_id_in NUMBER) IS 
+        SELECT nume, prenume, specializare 
+        FROM Antrenori 
+        JOIN Antreneaza ON (Antreneaza.antrenor_id = Antrenori.antrenor_id) 
+        WHERE jucator_id = p_jucator_id_in;
+    player_data Jucatori%ROWTYPE;
+    TYPE coach_data_type IS RECORD(nume VARCHAR(20), prenume VARCHAR(20), specializare VARCHAR(20));
+    coach_data coach_data_type;
+
+BEGIN
+    OPEN c1;
+    FETCH c1 INTO player_data;
+    CLOSE c1;
+    DBMS_OUTPUT.PUT_LINE('Jucatorul:');
+    DBMS_OUTPUT.PUT_LINE('----------------');
+    DBMS_OUTPUT.PUT_LINE(player_data.nume || ' ' || player_data.prenume);
+    DBMS_OUTPUT.PUT_LINE('Pozitie: ' || player_data.pozitie);
+    DBMS_OUTPUT.PUT_LINE('Numar tricou: ' || player_data.numar_tricou);
+    
+    OPEN c2(p_jucator_id);
+    FETCH c2 INTO coach_data;
+    CLOSE c2;
+    DBMS_OUTPUT.PUT_LINE('Antrenorul:');
+    DBMS_OUTPUT.PUT_LINE('----------------');
+    DBMS_OUTPUT.PUT_LINE(coach_data.nume || ' ' || coach_data.prenume);
+    DBMS_OUTPUT.PUT_LINE('Specializare: ' || coach_data.specializare);
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('Jucatorul sau antrenorul nu exista.');
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('A aparut o eroare: '|| SQLERRM);
+END;
+/
+BEGIN
+  show_player_and_coach(2);
+END;
+
+---------------------------------------------------------------------Cerinta 8
+CREATE OR REPLACE FUNCTION get_team_info(p_team_name IN VARCHAR2)
+RETURN VARCHAR2 IS
+    l_stadion VARCHAR2(100);
+    l_trofeu NUMBER;
+    l_antrenor VARCHAR2(100);
+    l_patron VARCHAR2(100);
+    CURSOR c1 (p_team_name_in VARCHAR2) IS
+        SELECT e.stadion, e.nr_trofee, a.nume || ' ' || a.prenume, p.nume || ' ' || p.prenume
+        FROM Echipe e
+        JOIN Antreneaza ant ON (e.echipa_id = ant.echipa_id)
+        JOIN Antrenori a ON (ant.antrenor_id = a.antrenor_id)
+        JOIN Patron p ON (e.patron_id = p.patron_id)
+        WHERE e.nume = p_team_name_in;
+BEGIN
+    OPEN c1(p_team_name);
+    FETCH c1 INTO l_stadion, l_trofeu, l_antrenor, l_patron;
+    CLOSE c1;
+    RETURN 'Team '||p_team_name||' information: '||l_stadion||' - '||l_trofeu||' trophies - Coach: '||l_antrenor||' - Owner: '||l_patron;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN 'Team not found';
+    WHEN TOO_MANY_ROWS THEN
+        RETURN 'Multiple teams found with the same name';
+END;
+/
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(get_team_info('DINAMO BUCURESTI'));
+END;
+/
+
+---------------------------------------------------------------------Cerinta 9
+CREATE OR REPLACE PROCEDURE show_player_and_others(p_jucator_id IN NUMBER)
+IS 
+    TYPE_MISMATCH EXCEPTION;
+    INVALID_INPUT EXCEPTION;
+  v_nume_jucator JUCATORI.nume%type;
+  v_prenume_jucator JUCATORI.prenume%type;
+  v_nume_echipa ECHIPE.nume%type;
+  v_nume_patron PATRON.nume%type;
+  v_tip_antrenament ANTRENEAZA.tip_antrenament%type;
+  v_nume_coach ANTRENORI.nume%type;
+  v_prenume_coach ANTRENORI.prenume%type;
+
+    CURSOR c1(p_jucator_id IN NUMBER) IS
+    SELECT j.nume, j.prenume, e.nume, p.nume, a.tip_antrenament, coach.prenume, coach.nume FROM JUCATORI j
+    JOIN LEGITIMEAZA l ON j.jucator_id = l.jucator_id
+    JOIN ECHIPE e ON l.echipa_id = e.echipa_id
+    JOIN PATRON p ON p.patron_id = e.patron_id
+    JOIN ANTRENEAZA a ON a.echipa_id = e.echipa_id
+    JOIN ANTRENORI coach ON coach.antrenor_id = a.antrenor_id
+    WHERE j.jucator_id = p_jucator_id;
+    
+BEGIN
+    OPEN c1(p_jucator_id);   
+    FETCH c1 INTO v_nume_jucator, v_prenume_jucator, v_nume_echipa, v_nume_patron, v_tip_antrenament, v_nume_coach, v_prenume_coach;
+    DBMS_OUTPUT.PUT_LINE('Player Name: ' || v_nume_jucator || ' '|| v_prenume_jucator);
+    DBMS_OUTPUT.PUT_LINE('Team Name: ' || v_nume_echipa);
+    DBMS_OUTPUT.PUT_LINE('Patron Name: ' || v_nume_patron);
+    DBMS_OUTPUT.PUT_LINE('Type of Training: ' || v_tip_antrenament);
+    DBMS_OUTPUT.PUT_LINE('Coach Name: ' || v_prenume_coach || ' '|| v_nume_coach);
+    CLOSE c1;
+    EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('No player with the ID ' || p_jucator_id || ' found.');
+    WHEN TOO_MANY_ROWS THEN
+    DBMS_OUTPUT.PUT_LINE('More than one player with the ID ' || p_jucator_id || ' found.');
+    WHEN TYPE_MISMATCH THEN
+    DBMS_OUTPUT.PUT_LINE('Ati gresit un tip de date!');
+    RETURN;
+    WHEN INVALID_INPUT THEN
+    DBMS_OUTPUT.PUT_LINE('Id-ul jucatorului trebuie sa fie de tip int si nu poate fi NULL!');
+    RETURN;
+    WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+BEGIN
+show_player_and_others(1);
+END;
+/
+
+---------------------------------------------------------------------Cerinta 10
+CREATE OR REPLACE TRIGGER prevent_edit_on_working_days
+BEFORE INSERT OR DELETE OR UPDATE ON FEDERATII
+BEGIN
+  IF (TO_CHAR(SYSDATE,'DY') IN ('FRI','SAT','SUN')) THEN
+    RAISE_APPLICATION_ERROR(-20001,'Operations on the table are only allowed during Fridays, Saturdays or Sundays!');
+  END IF; 
+END;
+
+---------------------------------------------------------------------Cerinta 11
+CREATE OR REPLACE TRIGGER prevent_delete_played_matches
+BEFORE DELETE ON Joaca_Meciuri
+FOR EACH ROW
+BEGIN
+  IF :old.data_meci < SYSDATE THEN
+    raise_application_error(-20001, 'Cannot delete matches that have already taken place');
+  END IF;
+END;
+/
+
+SELECT * FROM JOACA_MECIURI;
+
+DELETE FROM Joaca_Meciuri
+WHERE etapa_id = 5;
+
+---------------------------------------------------------------------Cerinta 12
+CREATE TABLE log_history2
+(
+    username VARCHAR2(20),
+    log_date DATE,
+    db_name VARCHAR2(20),
+    event VARCHAR2(100),
+    obj_name VARCHAR2(100)
+);
+CREATE OR REPLACE TRIGGER log_events
+    AFTER CREATE OR DROP OR ALTER ON SCHEMA
+BEGIN
+    INSERT INTO log_history VALUES(SYS.LOGIN_USER, SYSDATE, SYS.DATABASE_NAME, SYS.SYSEVENT, SYS.DICTIONARY_OBJ_NAME);
+END;
+/
+SELECT * FROM log_history;

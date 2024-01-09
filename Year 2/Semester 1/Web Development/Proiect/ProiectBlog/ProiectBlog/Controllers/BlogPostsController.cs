@@ -73,6 +73,7 @@ namespace ProiectBlog.Controllers
             {
                 response.Add(new BlogPostDto
                 {
+                    Id = blogPost.Id,
                     Title = blogPost.Title,
                     UrlHandle = blogPost.UrlHandle,
                     ShortDescription = (string)blogPost.ShortDescription,
@@ -90,6 +91,41 @@ namespace ProiectBlog.Controllers
                 });
             }
             return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetBlogPostById(Guid id)
+        {
+            var existingBlogPost = await blogPostRepository.GetBlogPostById(id);
+
+            if(existingBlogPost == null)
+            {
+                return NotFound();
+            }
+
+
+
+            var response = new BlogPostDto
+            {
+                Title = existingBlogPost.Title,
+                UrlHandle = existingBlogPost.UrlHandle,
+                ShortDescription = existingBlogPost.ShortDescription,
+                Content = existingBlogPost.Content,
+                PublishedDate = existingBlogPost.PublishedDate,
+                Author = existingBlogPost.Author,
+                FeaturedImageUrl = existingBlogPost.FeaturedImageUrl,
+                IsInvisible = existingBlogPost.IsInvisible,
+                Categories = existingBlogPost.Categories.Select(x => new CategoryDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle
+                }).ToList()
+            };
+
+            return Ok(response);
+
         }
     }
 }

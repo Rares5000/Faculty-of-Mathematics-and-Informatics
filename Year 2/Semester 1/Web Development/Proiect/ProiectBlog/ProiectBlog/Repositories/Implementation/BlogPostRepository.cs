@@ -25,5 +25,10 @@ namespace ProiectBlog.Repositories.Implementation
         {
             return await dbContext.BlogPosts.Include(x => x.Categories).ToListAsync();
         }
+
+        public async Task<BlogPost?> GetBlogPostById(Guid id)
+        {
+            return await dbContext.BlogPosts.Include(x => x.Categories).FirstOrDefaultAsync(x => x.Id == id);
+        }
     }
 }

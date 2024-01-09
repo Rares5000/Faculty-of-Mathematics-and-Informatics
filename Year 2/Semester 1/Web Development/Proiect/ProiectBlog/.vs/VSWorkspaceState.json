@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\ProiectBlog"
+    "\\ProiectBlog",
+    "\\ProiectBlog\\Controllers",
+    "\\ProiectBlog\\Migrations"
   ],
-  "SelectedNode": "\\ProiectBlog.sln",
   "PreviewInSolutionExplorer": false
 }

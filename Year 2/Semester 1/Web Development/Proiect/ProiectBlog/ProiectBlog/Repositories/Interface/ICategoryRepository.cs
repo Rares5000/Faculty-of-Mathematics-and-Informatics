@@ -9,5 +9,9 @@ namespace ProiectBlog.Repositories.Interface
         Task<IEnumerable<Category>> GetAllAsync();
 
         Task<Category?> GetCategoryById(Guid id);   
+        
+        Task<Category?> UpdateAsync(Category category);
+
+        Task<Category?> DeleteAsync(Guid id);
     }
 }

@@ -74,3 +74,4 @@ C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Se
 C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Proiect\ProiectBlog\ProiectBlog\obj\Debug\net7.0\ProiectBlog.pdb
 C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Proiect\ProiectBlog\ProiectBlog\obj\Debug\net7.0\ProiectBlog.genruntimeconfig.cache
 C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Proiect\ProiectBlog\ProiectBlog\obj\Debug\net7.0\ref\ProiectBlog.dll
+C:\Users\baciu\Documents\GitHub\Faculty-of-Mathematics-and-Informatics\Year 2\Semester 1\Web Development\Proiect\ProiectBlog\ProiectBlog\obj\Debug\net7.0\ProiectBlog.sourcelink.json

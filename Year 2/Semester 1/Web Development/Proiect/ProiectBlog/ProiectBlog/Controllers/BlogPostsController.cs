@@ -99,12 +99,10 @@ namespace ProiectBlog.Controllers
         {
             var existingBlogPost = await blogPostRepository.GetBlogPostById(id);
 
-            if(existingBlogPost == null)
+            if (existingBlogPost == null)
             {
                 return NotFound();
             }
-
-
 
             var response = new BlogPostDto
             {
@@ -126,6 +124,89 @@ namespace ProiectBlog.Controllers
 
             return Ok(response);
 
+        }
+
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> UpdateBlogPost(Guid id, UpdateBlogPostRequestDto request)
+        {
+            var blogPost = new BlogPost
+            {
+                Id = id,
+                Author = request.Author,
+                Content = request.Content,
+                FeaturedImageUrl = request.FeaturedImageUrl,
+                IsInvisible = request.IsInvisible,
+                PublishedDate = request.PublishedDate,
+                ShortDescription = request.ShortDescription,
+                Title = request.Title,
+                UrlHandle = request.UrlHandle,
+                Categories = new List<Category>()
+            };
+
+            foreach (var categoryGuid in request.Categories)
+            {
+                var existingCategory = await categoryRepository.GetCategoryById(categoryGuid);
+
+                if(existingCategory != null)
+                {
+                    blogPost.Categories.Add(existingCategory);
+                }
+            }
+
+            var updatedBlogPost = await blogPostRepository.UpdateAsync(blogPost);
+
+            if(updatedBlogPost == null) 
+            {
+                return NotFound();
+            }
+
+            var response = new BlogPostDto
+            {
+                Author = blogPost.Author,
+                Content = blogPost.Content,
+                FeaturedImageUrl = blogPost.FeaturedImageUrl,
+                IsInvisible = blogPost.IsInvisible,
+                PublishedDate = blogPost.PublishedDate,
+                ShortDescription = blogPost.ShortDescription,
+                Title = blogPost.Title,
+                UrlHandle = blogPost.UrlHandle,
+                Categories = blogPost.Categories.Select(x => new CategoryDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle
+                }).ToList()
+            };
+
+            return Ok(response);
+        }
+
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteBlogPost([FromRoute] Guid id)
+        {
+            var deletedBlogPost = await blogPostRepository.DeleteAsync(id);
+
+            if(deletedBlogPost == null)
+            {
+                return NotFound();
+            }
+
+            var blogPost = new BlogPostDto
+            {
+                Id = deletedBlogPost.Id,
+                Author = deletedBlogPost.Author,
+                Content = deletedBlogPost.Content,
+                FeaturedImageUrl = deletedBlogPost.FeaturedImageUrl,
+                IsInvisible = deletedBlogPost.IsInvisible,
+                PublishedDate = deletedBlogPost.PublishedDate,
+                ShortDescription = deletedBlogPost.ShortDescription,
+                Title = deletedBlogPost.Title,
+                UrlHandle = deletedBlogPost.UrlHandle
+            };
+
+            return Ok(blogPost);
         }
     }
 }

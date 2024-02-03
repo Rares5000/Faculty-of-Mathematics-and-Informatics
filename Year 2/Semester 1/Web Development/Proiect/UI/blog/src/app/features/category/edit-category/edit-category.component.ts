@@ -40,7 +40,6 @@ export class EditCategoryComponent implements OnInit, OnDestroy{
   }
 
   onFormSubmit(): void{
-    console.log(this.category);
     const updateCategoryRequest: EditCategoryRequest = {
       name: this.category?.name ?? '',
       urlHandle: this.category?.urlHandle ?? ''

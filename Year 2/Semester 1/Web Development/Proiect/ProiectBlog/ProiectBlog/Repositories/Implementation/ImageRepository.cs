@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ProiectBlog.Data;
 using ProiectBlog.Models.Domain;
@@ -12,10 +13,16 @@ namespace ProiectBlog.Repositories.Implementation
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly IHttpContextAccessor httpContextAccessor;
 
-        public ImageRepository(IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor) 
+        public ImageRepository(ApplicationDbContext dbContext, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor) 
         {
+            this.dbContext = dbContext;
             this.webHostEnvironment = webHostEnvironment;
             this.httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<IEnumerable<BlogImage>> GetAll()
+        {
+            return await dbContext.BlogImages.ToListAsync();
         }
 
         public async Task<BlogImage> Upload(IFormFile file, BlogImage blogImage)
@@ -27,6 +34,12 @@ namespace ProiectBlog.Repositories.Implementation
             var httpRequest = httpContextAccessor.HttpContext.Request;
             var urlPath = $"{httpRequest.Scheme}://{httpRequest.Host}{httpRequest.PathBase}/Images/{blogImage.FileName}{blogImage.FileExtension}";
 
+            blogImage.Url = urlPath;
+
+            await dbContext.BlogImages.AddAsync(blogImage);
+            await dbContext.SaveChangesAsync(); 
+
+            return blogImage;
         }
     }
 }

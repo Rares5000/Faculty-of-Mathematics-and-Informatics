@@ -126,6 +126,38 @@ namespace ProiectBlog.Controllers
 
         }
 
+        [HttpGet]
+        [Route("{urlHandle}")]
+        public async Task<IActionResult> GetBlogPostByUrlHandle(string urlHandle)
+        {
+            var existingBlogPost = await blogPostRepository.GetBlogPostByUrlHandle(urlHandle);
+
+            if (existingBlogPost == null)
+            {
+                return NotFound();
+            }
+
+            var response = new BlogPostDto
+            {
+                Title = existingBlogPost.Title,
+                UrlHandle = existingBlogPost.UrlHandle,
+                ShortDescription = existingBlogPost.ShortDescription,
+                Content = existingBlogPost.Content,
+                PublishedDate = existingBlogPost.PublishedDate,
+                Author = existingBlogPost.Author,
+                FeaturedImageUrl = existingBlogPost.FeaturedImageUrl,
+                IsInvisible = existingBlogPost.IsInvisible,
+                Categories = existingBlogPost.Categories.Select(x => new CategoryDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle
+                }).ToList()
+            };
+
+            return Ok(response);
+        }
+
         [HttpPut]
         [Route("{id:Guid}")]
         public async Task<IActionResult> UpdateBlogPost(Guid id, UpdateBlogPostRequestDto request)

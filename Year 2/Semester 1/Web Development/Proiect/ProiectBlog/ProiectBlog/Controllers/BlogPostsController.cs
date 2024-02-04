@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProiectBlog.Models.Domain;
 using ProiectBlog.Models.DTO;
 using ProiectBlog.Repositories.Interface;
@@ -19,6 +20,7 @@ namespace ProiectBlog.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateBlogPost(CreateBlogPostRequestDto request)
         {
             var blogPost = new BlogPost
@@ -160,6 +162,7 @@ namespace ProiectBlog.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> UpdateBlogPost(Guid id, UpdateBlogPostRequestDto request)
         {
             var blogPost = new BlogPost
@@ -216,6 +219,7 @@ namespace ProiectBlog.Controllers
 
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteBlogPost([FromRoute] Guid id)
         {
             var deletedBlogPost = await blogPostRepository.DeleteAsync(id);

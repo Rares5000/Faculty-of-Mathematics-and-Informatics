@@ -430,209 +430,288 @@ INSERT INTO LEGITIMEAZA
 values(2,12,NULL,2);
 
 ---------------------------------------------------------------------Cerinta 6
-CREATE OR REPLACE PROCEDURE CalculeazaClasamentSiStatistici(
-    inCompetitieID NUMBER,
-    inEchipaID NUMBER
-)
-IS
-    TYPE ClasamentType IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
-    TYPE StatisticiMeciuriType IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
-    TYPE StatisticiType IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
 
-    Clasament ClasamentType;
-    StatisticiMeciuri StatisticiMeciuriType;
-    Statistici StatisticiType;
+CREATE OR REPLACE PROCEDURE analiza_performanta AS 
+  TYPE t_varray IS VARRAY(100) OF Jucatori.jucator_id%TYPE;
+  jucatori_goluri t_varray := t_varray();
+  
+  TYPE t_nested_table IS TABLE OF Jucatori.jucator_id%TYPE;
+  jucatori_mijlocasi t_nested_table := t_nested_table();
+  
+  TYPE t_index_by_table IS TABLE OF Transfera.suma_transfer%TYPE INDEX BY PLS_INTEGER;
+  transferuri t_index_by_table;
+  
+  v_suma_transfer Transfera.suma_transfer%TYPE;
+  v_echipa_id Echipe.echipa_id%TYPE;
+BEGIN 
+  BEGIN
+    SELECT echipa_id INTO v_echipa_id FROM Echipe WHERE nume = 'FC VASLUI';
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+      DBMS_OUTPUT.PUT_LINE('Nu a fost găsită nicio echipă cu numele specificat.');
+      RETURN;
+  END;
+  
+  -- Colectarea ID-urilor jucatorilor cu salarii peste 10000 din echipa specificata
+  BEGIN
+    SELECT jucator_id BULK COLLECT INTO jucatori_goluri FROM Legitimeaza WHERE echipa_id = v_echipa_id AND salariu > 10000;
 
-    v_Puncte NUMBER;
-    v_GoluriMarcate NUMBER;
-    v_GoluriPrimite NUMBER;
-
-    CURSOR MeciuriCursor IS
-        SELECT puncte, goluri_marcate, goluri_primite
-        FROM PARTICIPA
-        WHERE echipa_id = inEchipaID AND competitie_id = inCompetitieID;
-
-    v_SumaPuncte NUMBER := 0;
-
-BEGIN
-    FOR j IN 1..20 LOOP
-        Clasament(j) := 0;
-    END LOOP;
-
-    StatisticiMeciuri := StatisticiMeciuriType();
-
-    FOR meci IN MeciuriCursor LOOP
-        v_Puncte := meci.puncte;
-        v_GoluriMarcate := meci.goluri_marcate;
-        v_GoluriPrimite := meci.goluri_primite;
-
-        Clasament(inEchipaID) := Clasament(inEchipaID) + v_Puncte;
-
-        StatisticiMeciuri(StatisticiMeciuri.COUNT + 1) := v_Puncte;
-    END LOOP;
-
-    FOR i IN 1..StatisticiMeciuri.COUNT LOOP
-        v_SumaPuncte := v_SumaPuncte + StatisticiMeciuri(i);
-    END LOOP;
-
-    Statistici(inEchipaID) := v_SumaPuncte;
-
-    DBMS_OUTPUT.PUT_LINE('Clasamentul echipei ' || inEchipaID || ' în competiția ' || inCompetitieID || ': ' || Clasament(inEchipaID));
-
-    DBMS_OUTPUT.PUT_LINE('Statisticile echipei ' || inEchipaID || ': Puncte: ' || Clasament(inEchipaID) || ', Suma punctelor: ' || Statistici(inEchipaID) || ', Media punctelor: ' || Statistici(inEchipaID) / StatisticiMeciuri.COUNT);
-END CalculeazaClasamentSiStatistici;
+    IF jucatori_goluri.COUNT = 0 THEN
+      DBMS_OUTPUT.PUT_LINE('Nu au fost găsiți jucători cu salarii mai mari de 10000 în echipa specificată.');
+    ELSE
+      FOR i IN 1..jucatori_goluri.COUNT LOOP
+        BEGIN
+          SELECT suma_transfer INTO v_suma_transfer FROM Transfera WHERE jucator_id = jucatori_goluri(i);
+          transferuri(i) := v_suma_transfer;
+          DBMS_OUTPUT.PUT_LINE('Jucatorul cu ID ' || jucatori_goluri(i) || ' a fost transferat pentru suma de ' || v_suma_transfer);
+        EXCEPTION
+          WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Nu a fost găsit niciun transfer pentru jucătorul cu ID ' || jucatori_goluri(i) || '.');
+        END;
+      END LOOP;
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('A apărut o eroare.');
+  END;
+  
+  -- Colectarea ID-urilor jucatorilor mijlocasi si afisarea informatiilor despre acestia
+  BEGIN
+    SELECT jucator_id BULK COLLECT INTO jucatori_mijlocasi FROM Jucatori WHERE pozitie = 'MIJLOCAS';
+    IF jucatori_mijlocasi.COUNT = 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Nu au fost găsiți jucători mijlocași.');
+    ELSE
+        FOR i IN 1..jucatori_mijlocasi.COUNT LOOP
+          DBMS_OUTPUT.PUT_LINE('Jucatorul cu ID ' || jucatori_mijlocasi(i) || ' este mijlocas.');
+        END LOOP;
+    END IF;
+  END;
+  
+END;
 /
-DECLARE
-    CompetitieID NUMBER := 1;
-    EchipaID NUMBER := 1;
+
 BEGIN
-    CalculeazaClasamentSiStatistici(CompetitieID, EchipaID);
+  analiza_performanta;
 END;
 /
 
 ---------------------------------------------------------------------Cerinta 7
-CREATE OR REPLACE PROCEDURE show_player_and_coach(p_jucator_id IN NUMBER)
+
+CREATE OR REPLACE PROCEDURE show_players_same_position(p_jucator_id IN NUMBER)
 IS
     CURSOR c1 IS 
         SELECT jucator_id, nume, prenume, pozitie, numar_tricou 
-        FROM Jucatori;
-    CURSOR c2 (p_jucator_id_in NUMBER) IS 
-        SELECT nume, prenume, specializare 
-        FROM Antrenori 
-        JOIN Antreneaza ON (Antreneaza.antrenor_id = Antrenori.antrenor_id) 
-        WHERE jucator_id = p_jucator_id_in;
-    player_data Jucatori%ROWTYPE;
-    TYPE coach_data_type IS RECORD(nume VARCHAR(20), prenume VARCHAR(20), specializare VARCHAR(20));
-    coach_data coach_data_type;
+        FROM JUCATORI
+        WHERE jucator_id = p_jucator_id;
+
+    player_data JUCATORI%ROWTYPE;
+
+    TYPE t_player_data IS RECORD(
+        nume JUCATORI.nume%TYPE,
+        prenume JUCATORI.prenume%TYPE,
+        pozitie JUCATORI.pozitie%TYPE,
+        numar_tricou JUCATORI.numar_tricou%TYPE
+    );
+
+    -- Cursor parametrizat pentru selectarea jucatorilor cu aceeasi pozitie, excluzand jucatorul initial
+    CURSOR c2 (p_pozitie VARCHAR2) IS 
+        SELECT nume, prenume, pozitie, numar_tricou
+        FROM JUCATORI
+        WHERE pozitie = p_pozitie AND jucator_id <> p_jucator_id;
+
+    player_same_position t_player_data;
+    found_other_players BOOLEAN := FALSE;
 
 BEGIN
+    -- Deschiderea cursorului c1 si extragerea datelor despre jucatorul specificat
     OPEN c1;
     FETCH c1 INTO player_data;
+    IF c1%NOTFOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Jucatorul cu ID-ul ' || p_jucator_id || ' nu exista.');
+        CLOSE c1;
+        RETURN;
+    END IF;
     CLOSE c1;
-    DBMS_OUTPUT.PUT_LINE('Jucatorul:');
+
+    DBMS_OUTPUT.PUT_LINE('Jucatorul initial:');
     DBMS_OUTPUT.PUT_LINE('----------------');
     DBMS_OUTPUT.PUT_LINE(player_data.nume || ' ' || player_data.prenume);
     DBMS_OUTPUT.PUT_LINE('Pozitie: ' || player_data.pozitie);
     DBMS_OUTPUT.PUT_LINE('Numar tricou: ' || player_data.numar_tricou);
-    
-    OPEN c2(p_jucator_id);
-    FETCH c2 INTO coach_data;
-    CLOSE c2;
-    DBMS_OUTPUT.PUT_LINE('Antrenorul:');
-    DBMS_OUTPUT.PUT_LINE('----------------');
-    DBMS_OUTPUT.PUT_LINE(coach_data.nume || ' ' || coach_data.prenume);
-    DBMS_OUTPUT.PUT_LINE('Specializare: ' || coach_data.specializare);
-EXCEPTION
-  WHEN NO_DATA_FOUND THEN
-    DBMS_OUTPUT.PUT_LINE('Jucatorul sau antrenorul nu exista.');
-  WHEN OTHERS THEN
-    DBMS_OUTPUT.PUT_LINE('A aparut o eroare: '|| SQLERRM);
-END;
-/
-BEGIN
-  show_player_and_coach(2);
-END;
 
----------------------------------------------------------------------Cerinta 8
-CREATE OR REPLACE FUNCTION get_team_info(p_team_name IN VARCHAR2)
-RETURN VARCHAR2 IS
-    l_stadion VARCHAR2(100);
-    l_trofeu NUMBER;
-    l_antrenor VARCHAR2(100);
-    l_patron VARCHAR2(100);
-    CURSOR c1 (p_team_name_in VARCHAR2) IS
-        SELECT e.stadion, e.nr_trofee, a.nume || ' ' || a.prenume, p.nume || ' ' || p.prenume
-        FROM Echipe e
-        JOIN Antreneaza ant ON (e.echipa_id = ant.echipa_id)
-        JOIN Antrenori a ON (ant.antrenor_id = a.antrenor_id)
-        JOIN Patron p ON (e.patron_id = p.patron_id)
-        WHERE e.nume = p_team_name_in;
-BEGIN
-    OPEN c1(p_team_name);
-    FETCH c1 INTO l_stadion, l_trofeu, l_antrenor, l_patron;
-    CLOSE c1;
-    RETURN 'Team '||p_team_name||' information: '||l_stadion||' - '||l_trofeu||' trophies - Coach: '||l_antrenor||' - Owner: '||l_patron;
+    -- Deschiderea cursorului c2 cu pozitia jucatorului specificat si afisarea altor jucatori cu aceeasi pozitie
+    OPEN c2(player_data.pozitie);
+    LOOP
+        FETCH c2 INTO player_same_position;
+        EXIT WHEN c2%NOTFOUND;
+        IF NOT found_other_players THEN
+            DBMS_OUTPUT.PUT_LINE('Alti jucatori cu aceeasi pozitie:');
+            found_other_players := TRUE;
+        END IF;
+        
+        DBMS_OUTPUT.PUT_LINE('----------------');
+        DBMS_OUTPUT.PUT_LINE(player_same_position.nume || ' ' || player_same_position.prenume);
+        DBMS_OUTPUT.PUT_LINE('Pozitie: ' || player_same_position.pozitie);
+        DBMS_OUTPUT.PUT_LINE('Numar tricou: ' || player_same_position.numar_tricou);
+    END LOOP;
+    CLOSE c2;
+
+    IF NOT found_other_players THEN
+        DBMS_OUTPUT.PUT_LINE('Nu exista alti jucatori cu aceeasi pozitie.');
+    END IF;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
-        RETURN 'Team not found';
-    WHEN TOO_MANY_ROWS THEN
-        RETURN 'Multiple teams found with the same name';
+        DBMS_OUTPUT.PUT_LINE('Nu s-au gasit date.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('A aparut o eroare: ' || SQLERRM);
 END;
 /
 
 BEGIN
-    DBMS_OUTPUT.PUT_LINE(get_team_info('DINAMO BUCURESTI'));
+    show_players_same_position(3);
+END;
+/
+
+---------------------------------------------------------------------Cerinta 8
+
+CREATE OR REPLACE FUNCTION verifica_echipa6 (nume_echipa VARCHAR)
+RETURN VARCHAR2 IS
+    salariu_maxim NUMBER;
+    numar_jucatori NUMBER;
+    pozitie_max_salariu VARCHAR2(100);
+    
+    echipa_subevaluata EXCEPTION;
+    jucatori_insuficienti EXCEPTION;
+
+BEGIN
+    -- Selectarea salariului maxim din echipa
+    SELECT MAX(L.salariu) INTO salariu_maxim
+    FROM Legitimeaza L
+    JOIN Echipe E ON L.echipa_id = E.echipa_id
+    WHERE E.nume = nume_echipa;
+
+    -- Determinarea pozitiei jucatorului cu salariul maxim
+    SELECT J.pozitie INTO pozitie_max_salariu
+    FROM Jucatori J
+    JOIN Legitimeaza L ON J.jucator_id = L.jucator_id
+    JOIN Echipe E ON L.echipa_id = E.echipa_id
+    WHERE E.nume = nume_echipa AND L.salariu = salariu_maxim;
+
+    -- Calculul numarului total de jucatori din echipa specificata
+    SELECT COUNT(L.jucator_id) INTO numar_jucatori
+    FROM Legitimeaza L
+    JOIN Echipe E ON L.echipa_id = E.echipa_id
+    WHERE E.nume = nume_echipa;
+
+    -- Verifica daca echipa are suficienti jucatori
+    IF numar_jucatori <= 5 THEN
+        RAISE jucatori_insuficienti;
+    END IF;
+
+    -- Verifica daca salariul maxim nu este suficient sau daca jucatorul cu salariul maxim nu este atacant
+    IF salariu_maxim <= 30000 OR pozitie_max_salariu != 'ATACANT' THEN
+        RAISE echipa_subevaluata;
+    END IF;
+
+    RETURN 'Echipa este in regula.';
+
+EXCEPTION
+    WHEN jucatori_insuficienti THEN
+        RETURN 'Jucatori insuficienti pentru campionat.';
+    WHEN echipa_subevaluata THEN
+        RETURN 'Echipa este subevaluata, nu poate juca in campionat.';
+    WHEN OTHERS THEN
+        RETURN 'A aparut o eroare.';
+END;
+/
+
+DECLARE
+    rezultat VARCHAR2(100);
+BEGIN
+    rezultat := verifica_echipa6('DINAMO BUCURESTI');
+    DBMS_OUTPUT.PUT_LINE(rezultat);
 END;
 /
 
 ---------------------------------------------------------------------Cerinta 9
-CREATE OR REPLACE PROCEDURE show_player_and_others(p_jucator_id IN NUMBER)
-IS 
-    TYPE_MISMATCH EXCEPTION;
-    INVALID_INPUT EXCEPTION;
-  v_nume_jucator JUCATORI.nume%type;
-  v_prenume_jucator JUCATORI.prenume%type;
-  v_nume_echipa ECHIPE.nume%type;
-  v_nume_patron PATRON.nume%type;
-  v_tip_antrenament ANTRENEAZA.tip_antrenament%type;
-  v_nume_coach ANTRENORI.nume%type;
-  v_prenume_coach ANTRENORI.prenume%type;
 
-    CURSOR c1(p_jucator_id IN NUMBER) IS
-    SELECT j.nume, j.prenume, e.nume, p.nume, a.tip_antrenament, coach.prenume, coach.nume FROM JUCATORI j
-    JOIN LEGITIMEAZA l ON j.jucator_id = l.jucator_id
-    JOIN ECHIPE e ON l.echipa_id = e.echipa_id
-    JOIN PATRON p ON p.patron_id = e.patron_id
-    JOIN ANTRENEAZA a ON a.echipa_id = e.echipa_id
-    JOIN ANTRENORI coach ON coach.antrenor_id = a.antrenor_id
-    WHERE j.jucator_id = p_jucator_id;
+CREATE OR REPLACE FUNCTION verifica_echipa6 (nume_echipa VARCHAR)
+RETURN VARCHAR2 IS
+    salariu_maxim NUMBER;
+    numar_jucatori NUMBER;
+    pozitie_max_salariu VARCHAR2(100);
     
+    echipa_subevaluata EXCEPTION;
+    jucatori_insuficienti EXCEPTION;
+
 BEGIN
-    OPEN c1(p_jucator_id);   
-    FETCH c1 INTO v_nume_jucator, v_prenume_jucator, v_nume_echipa, v_nume_patron, v_tip_antrenament, v_nume_coach, v_prenume_coach;
-    DBMS_OUTPUT.PUT_LINE('Player Name: ' || v_nume_jucator || ' '|| v_prenume_jucator);
-    DBMS_OUTPUT.PUT_LINE('Team Name: ' || v_nume_echipa);
-    DBMS_OUTPUT.PUT_LINE('Patron Name: ' || v_nume_patron);
-    DBMS_OUTPUT.PUT_LINE('Type of Training: ' || v_tip_antrenament);
-    DBMS_OUTPUT.PUT_LINE('Coach Name: ' || v_prenume_coach || ' '|| v_nume_coach);
-    CLOSE c1;
-    EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-    DBMS_OUTPUT.PUT_LINE('No player with the ID ' || p_jucator_id || ' found.');
-    WHEN TOO_MANY_ROWS THEN
-    DBMS_OUTPUT.PUT_LINE('More than one player with the ID ' || p_jucator_id || ' found.');
-    WHEN TYPE_MISMATCH THEN
-    DBMS_OUTPUT.PUT_LINE('Ati gresit un tip de date!');
-    RETURN;
-    WHEN INVALID_INPUT THEN
-    DBMS_OUTPUT.PUT_LINE('Id-ul jucatorului trebuie sa fie de tip int si nu poate fi NULL!');
-    RETURN;
+    -- Selectarea salariului maxim din echipa
+    SELECT MAX(L.salariu) INTO salariu_maxim
+    FROM Legitimeaza L
+    JOIN Echipe E ON L.echipa_id = E.echipa_id
+    WHERE E.nume = nume_echipa;
+
+    -- Determinarea pozitiei jucatorului cu salariul maxim
+    SELECT J.pozitie INTO pozitie_max_salariu
+    FROM Jucatori J
+    JOIN Legitimeaza L ON J.jucator_id = L.jucator_id
+    JOIN Echipe E ON L.echipa_id = E.echipa_id
+    WHERE E.nume = nume_echipa AND L.salariu = salariu_maxim;
+
+    -- Calculul numarului total de jucatori din echipa specificata
+    SELECT COUNT(L.jucator_id) INTO numar_jucatori
+    FROM Legitimeaza L
+    JOIN Echipe E ON L.echipa_id = E.echipa_id
+    WHERE E.nume = nume_echipa;
+
+    -- Verifica daca echipa are suficienti jucatori
+    IF numar_jucatori <= 5 THEN
+        RAISE jucatori_insuficienti;
+    END IF;
+
+    -- Verifica daca salariul maxim nu este suficient sau daca jucatorul cu salariul maxim nu este atacant
+    IF salariu_maxim <= 30000 OR pozitie_max_salariu != 'ATACANT' THEN
+        RAISE echipa_subevaluata;
+    END IF;
+
+    RETURN 'Echipa este in regula.';
+
+EXCEPTION
+    WHEN jucatori_insuficienti THEN
+        RETURN 'Jucatori insuficienti pentru campionat.';
+    WHEN echipa_subevaluata THEN
+        RETURN 'Echipa este subevaluata, nu poate juca in campionat.';
     WHEN OTHERS THEN
-    DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+        RETURN 'A aparut o eroare.';
 END;
 /
 
+DECLARE
+    rezultat VARCHAR2(100);
 BEGIN
-show_player_and_others(1);
+    rezultat := verifica_echipa6('DINAMO BUCURESTI');
+    DBMS_OUTPUT.PUT_LINE(rezultat);
 END;
 /
 
 ---------------------------------------------------------------------Cerinta 10
+
 CREATE OR REPLACE TRIGGER prevent_edit_on_working_days
 BEFORE INSERT OR DELETE OR UPDATE ON FEDERATII
 BEGIN
-  IF (TO_CHAR(SYSDATE,'DY') IN ('FRI','SAT','SUN')) THEN
-    RAISE_APPLICATION_ERROR(-20001,'Operations on the table are only allowed during Fridays, Saturdays or Sundays!');
+  IF (TO_CHAR(SYSDATE,'DY') IN ('MON','SAT','SUN')) THEN
+    RAISE_APPLICATION_ERROR(-20001,'Nu poti modifica tabelul Federatii in zilele: luni, sambata, duminica.');
   END IF; 
 END;
 
 ---------------------------------------------------------------------Cerinta 11
+
 CREATE OR REPLACE TRIGGER prevent_delete_played_matches
 BEFORE DELETE ON Joaca_Meciuri
 FOR EACH ROW
 BEGIN
   IF :old.data_meci < SYSDATE THEN
-    raise_application_error(-20001, 'Cannot delete matches that have already taken place');
+    raise_application_error(-20001, 'Nu poti sterge meciuri care au avut loc deja.');
   END IF;
 END;
 /
@@ -643,18 +722,249 @@ DELETE FROM Joaca_Meciuri
 WHERE etapa_id = 5;
 
 ---------------------------------------------------------------------Cerinta 12
-CREATE TABLE log_history2
+CREATE TABLE log_history
 (
     username VARCHAR2(20),
-    log_date DATE,
     db_name VARCHAR2(20),
     event VARCHAR2(100),
     obj_name VARCHAR2(100)
 );
+
 CREATE OR REPLACE TRIGGER log_events
     AFTER CREATE OR DROP OR ALTER ON SCHEMA
 BEGIN
-    INSERT INTO log_history VALUES(SYS.LOGIN_USER, SYSDATE, SYS.DATABASE_NAME, SYS.SYSEVENT, SYS.DICTIONARY_OBJ_NAME);
+    INSERT INTO log_history VALUES(SYS.LOGIN_USER, SYS.DATABASE_NAME, SYS.SYSEVENT, SYS.DICTIONARY_OBJ_NAME);
 END;
 /
+
 SELECT * FROM log_history;
+
+---------------------------------------------------------------------Cerinta 13
+
+CREATE OR REPLACE PACKAGE PACHET_FOTBAL AS
+    PROCEDURE ANALIZA_PERFORMANTA;
+    PROCEDURE SHOW_PLAYERS_SAME_POSITION(p_jucator_id IN NUMBER);
+    FUNCTION VERIFICA_ECHIPA6(nume_echipa VARCHAR) RETURN VARCHAR2;
+    PROCEDURE AFISEAZA_INFO_JUCATOR(p_numar_tricou IN NUMBER);
+END PACHET_FOTBAL;
+/
+
+CREATE OR REPLACE PACKAGE BODY PACHET_FOTBAL AS
+
+    PROCEDURE ANALIZA_PERFORMANTA AS 
+      TYPE t_varray IS VARRAY(100) OF Jucatori.jucator_id%TYPE;
+      jucatori_goluri t_varray := t_varray();
+      TYPE t_nested_table IS TABLE OF Jucatori.jucator_id%TYPE;
+      jucatori_mijlocasi t_nested_table := t_nested_table();
+      TYPE t_index_by_table IS TABLE OF Transfera.suma_transfer%TYPE INDEX BY PLS_INTEGER;
+      transferuri t_index_by_table;
+      v_suma_transfer Transfera.suma_transfer%TYPE;
+      v_echipa_id Echipe.echipa_id%TYPE;
+    BEGIN 
+        BEGIN
+            SELECT echipa_id INTO v_echipa_id FROM Echipe WHERE nume = 'FC VASLUI';
+          EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+              DBMS_OUTPUT.PUT_LINE('Nu a fost găsită nicio echipă cu numele specificat.');
+              RETURN;
+        END;
+      -- Colectarea ID-urilor jucatorilor cu salarii peste 10000 din echipa specificata
+      BEGIN
+        SELECT jucator_id BULK COLLECT INTO jucatori_goluri FROM Legitimeaza WHERE echipa_id = v_echipa_id AND salariu > 10000;
+    
+        IF jucatori_goluri.COUNT = 0 THEN
+          DBMS_OUTPUT.PUT_LINE('Nu au fost găsiți jucători cu salarii mai mari de 10000 în echipa specificată.');
+        ELSE
+          FOR i IN 1..jucatori_goluri.COUNT LOOP
+            BEGIN
+              SELECT suma_transfer INTO v_suma_transfer FROM Transfera WHERE jucator_id = jucatori_goluri(i);
+              transferuri(i) := v_suma_transfer;
+              DBMS_OUTPUT.PUT_LINE('Jucatorul cu ID ' || jucatori_goluri(i) || ' a fost transferat pentru suma de ' || v_suma_transfer);
+            EXCEPTION
+              WHEN NO_DATA_FOUND THEN
+                DBMS_OUTPUT.PUT_LINE('Nu a fost găsit niciun transfer pentru jucătorul cu ID ' || jucatori_goluri(i) || '.');
+            END;
+          END LOOP;
+        END IF;
+      EXCEPTION
+        WHEN OTHERS THEN
+          DBMS_OUTPUT.PUT_LINE('A apărut o eroare.');
+      END;
+      -- Colectarea ID-urilor jucatorilor mijlocasi si afisarea informatiilor despre acestia
+      BEGIN
+        SELECT jucator_id BULK COLLECT INTO jucatori_mijlocasi FROM Jucatori WHERE pozitie = 'MIJLOCAS';
+        IF jucatori_mijlocasi.COUNT = 0 THEN
+            DBMS_OUTPUT.PUT_LINE('Nu au fost găsiți jucători mijlocași.');
+        ELSE
+            FOR i IN 1..jucatori_mijlocasi.COUNT LOOP
+              DBMS_OUTPUT.PUT_LINE('Jucatorul cu ID ' || jucatori_mijlocasi(i) || ' este mijlocas.');
+            END LOOP;
+        END IF;
+        END;
+    END ANALIZA_PERFORMANTA;
+
+    PROCEDURE SHOW_PLAYERS_SAME_POSITION(p_jucator_id IN NUMBER) IS
+        CURSOR c1 IS 
+            SELECT jucator_id, nume, prenume, pozitie, numar_tricou 
+            FROM JUCATORI
+            WHERE jucator_id = p_jucator_id;
+    
+        player_data JUCATORI%ROWTYPE;
+    
+        TYPE t_player_data IS RECORD(
+            nume JUCATORI.nume%TYPE,
+            prenume JUCATORI.prenume%TYPE,
+            pozitie JUCATORI.pozitie%TYPE,
+            numar_tricou JUCATORI.numar_tricou%TYPE
+        );
+    
+        -- Cursor parametrizat pentru selectarea jucatorilor cu aceeasi pozitie, excluzand jucatorul initial
+        CURSOR c2 (p_pozitie VARCHAR2) IS 
+            SELECT nume, prenume, pozitie, numar_tricou
+            FROM JUCATORI
+            WHERE pozitie = p_pozitie AND jucator_id <> p_jucator_id;
+    
+        player_same_position t_player_data;
+        found_other_players BOOLEAN := FALSE;
+
+    BEGIN
+        -- Deschiderea cursorului c1 si extragerea datelor despre jucatorul specificat
+        OPEN c1;
+        FETCH c1 INTO player_data;
+        IF c1%NOTFOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Jucatorul cu ID-ul ' || p_jucator_id || ' nu exista.');
+            CLOSE c1;
+            RETURN;
+        END IF;
+        CLOSE c1;
+    
+        DBMS_OUTPUT.PUT_LINE('Jucatorul initial:');
+        DBMS_OUTPUT.PUT_LINE('----------------');
+        DBMS_OUTPUT.PUT_LINE(player_data.nume || ' ' || player_data.prenume);
+        DBMS_OUTPUT.PUT_LINE('Pozitie: ' || player_data.pozitie);
+        DBMS_OUTPUT.PUT_LINE('Numar tricou: ' || player_data.numar_tricou);
+    
+        -- Deschiderea cursorului c2 cu pozitia jucatorului specificat si afisarea altor jucatori cu aceeasi pozitie
+        OPEN c2(player_data.pozitie);
+        LOOP
+            FETCH c2 INTO player_same_position;
+            EXIT WHEN c2%NOTFOUND;
+            IF NOT found_other_players THEN
+                DBMS_OUTPUT.PUT_LINE('Alti jucatori cu aceeasi pozitie:');
+                found_other_players := TRUE;
+            END IF;
+            
+            DBMS_OUTPUT.PUT_LINE('----------------');
+            DBMS_OUTPUT.PUT_LINE(player_same_position.nume || ' ' || player_same_position.prenume);
+            DBMS_OUTPUT.PUT_LINE('Pozitie: ' || player_same_position.pozitie);
+            DBMS_OUTPUT.PUT_LINE('Numar tricou: ' || player_same_position.numar_tricou);
+        END LOOP;
+        CLOSE c2;
+    
+        IF NOT found_other_players THEN
+            DBMS_OUTPUT.PUT_LINE('Nu exista alti jucatori cu aceeasi pozitie.');
+        END IF;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Nu s-au gasit date.');
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('A aparut o eroare: ' || SQLERRM);
+
+    END SHOW_PLAYERS_SAME_POSITION;
+
+    FUNCTION VERIFICA_ECHIPA6(nume_echipa VARCHAR) RETURN VARCHAR2 IS
+    
+      salariu_maxim NUMBER;
+      numar_jucatori NUMBER;
+      pozitie_max_salariu VARCHAR2(100);
+      echipa_subevaluata EXCEPTION;
+      jucatori_insuficienti EXCEPTION;
+    BEGIN
+            -- Selectarea salariului maxim din echipa
+            SELECT MAX(L.salariu) INTO salariu_maxim
+            FROM Legitimeaza L
+            JOIN Echipe E ON L.echipa_id = E.echipa_id
+            WHERE E.nume = nume_echipa;
+        
+            -- Determinarea pozitiei jucatorului cu salariul maxim
+            SELECT J.pozitie INTO pozitie_max_salariu
+            FROM Jucatori J
+            JOIN Legitimeaza L ON J.jucator_id = L.jucator_id
+            JOIN Echipe E ON L.echipa_id = E.echipa_id
+            WHERE E.nume = nume_echipa AND L.salariu = salariu_maxim;
+        
+            -- Calculul numarului total de jucatori din echipa specificata
+            SELECT COUNT(L.jucator_id) INTO numar_jucatori
+            FROM Legitimeaza L
+            JOIN Echipe E ON L.echipa_id = E.echipa_id
+            WHERE E.nume = nume_echipa;
+        
+            -- Verifica daca echipa are suficienti jucatori
+            IF numar_jucatori <= 5 THEN
+                RAISE jucatori_insuficienti;
+            END IF;
+        
+            -- Verifica daca salariul maxim nu este suficient sau daca jucatorul cu salariul maxim nu este atacant
+            IF salariu_maxim <= 30000 OR pozitie_max_salariu != 'ATACANT' THEN
+                RAISE echipa_subevaluata;
+            END IF;
+        
+            RETURN 'Echipa este in regula.';
+        
+        EXCEPTION
+            WHEN jucatori_insuficienti THEN
+                RETURN 'Jucatori insuficienti pentru campionat.';
+            WHEN echipa_subevaluata THEN
+                RETURN 'Echipa este subevaluata, nu poate juca in campionat.';
+            WHEN OTHERS THEN
+                RETURN 'A aparut o eroare.';
+    
+    END VERIFICA_ECHIPA6;
+    
+    PROCEDURE AFISEAZA_INFO_JUCATOR(p_numar_tricou IN NUMBER) IS
+        v_nume_jucator VARCHAR(20);
+        v_prenume_jucator VARCHAR(20);
+        v_nume_echipa VARCHAR(20);
+        v_nume_patron VARCHAR(20);
+        v_prenume_patron VARCHAR(20);
+        v_tip_antrenament VARCHAR(20);
+        v_nume_antrenor VARCHAR(20);
+        v_prenume_antrenor VARCHAR(20);
+    BEGIN
+        SELECT j.nume, j.prenume, e.nume, p.nume, p.prenume, a.tip_antrenament, an.nume, an.prenume
+        INTO v_nume_jucator, v_prenume_jucator, v_nume_echipa, v_nume_patron, v_prenume_patron, v_tip_antrenament, v_nume_antrenor, v_prenume_antrenor
+        FROM JUCATORI j
+        JOIN LEGITIMEAZA l ON j.jucator_id = l.jucator_id
+        JOIN ECHIPE e ON l.echipa_id = e.echipa_id
+        JOIN PATRON p ON e.patron_id = p.patron_id
+        JOIN ANTRENEAZA a ON e.echipa_id = a.echipa_id AND j.jucator_id = a.jucator_id
+        JOIN ANTRENORI an ON a.antrenor_id = an.antrenor_id
+        WHERE j.numar_tricou = p_numar_tricou;
+    
+        DBMS_OUTPUT.PUT_LINE('Jucator: ' || v_nume_jucator || ' ' || v_prenume_jucator);
+        DBMS_OUTPUT.PUT_LINE('Echipa: ' || v_nume_echipa);
+        DBMS_OUTPUT.PUT_LINE('Patron: ' || v_nume_patron || ' ' || v_prenume_patron);
+        DBMS_OUTPUT.PUT_LINE('Tip Antrenament: ' || v_tip_antrenament);
+        DBMS_OUTPUT.PUT_LINE('Antrenor: ' || v_nume_antrenor || ' ' || v_prenume_antrenor);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Nu s-au gasit date pentru numarul de tricou ' || p_numar_tricou);
+        WHEN TOO_MANY_ROWS THEN
+            DBMS_OUTPUT.PUT_LINE('Prea multe randuri gasite pentru numarul de tricou ' || p_numar_tricou);
+    END AFISEAZA_INFO_JUCATOR;
+
+END PACHET_FOTBAL;
+/
+
+EXECUTE PACHET_FOTBAL.ANALIZA_PERFORMANTA;
+EXECUTE PACHET_FOTBAL.SHOW_PLAYERS_SAME_POSITION(3);
+SELECT PACHET_FOTBAL.VERIFICA_ECHIPA6('DINAMO BUCURESTI') from dual;
+DECLARE
+    rezultat VARCHAR2(100);
+BEGIN
+    rezultat := PACHET_FOTBAL.VERIFICA_ECHIPA6('DINAMO BUCURESTI');
+    DBMS_OUTPUT.PUT_LINE(rezultat);
+END;
+/
+EXECUTE PACHET_FOTBAL.AFISEAZA_INFO_JUCATOR(1);
+
